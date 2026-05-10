@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>夜、ひとりで抱えてるその気持ち。</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;500&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* 背景 */
+    --navy:     #0d1117;
+    --navy-mid: #131922;
+    --navy-soft:#1c2535;
+
+    /*
+     * ── 3色ルール ──────────────────────────────
+     * --c-strong : 濃いピンク  → 最も伝えたいワード・感情の核心
+     * --c-soft   : 薄いピンク  → サブ強調・やさしく添えたい言葉
+     * --c-white  : 白          → 見出し・通常テキスト
+     * ──────────────────────────────────────────
+     * ベーシックな説明文は white を 60% 透明にした rgba で表現
+     */
+    --c-strong: #d4687a;   /* 濃いピンク */
+    --c-soft:   #f0b8c4;   /* 薄いピンク */
+    --c-white:  #f5efe8;   /* 白（ウォームホワイト） */
+    --c-body:   rgba(245,239,232,0.65); /* 本文グレー = white×65% */
+    --c-muted:  rgba(245,239,232,0.35); /* ラベル・注釈 */
+
+    --glass-bg:     rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Serif JP', serif;
+    background: var(--navy);
+    color: var(--c-white);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── 色ユーティリティ ── */
+  .strong { color: var(--c-strong); }   /* 濃いピンク: 感情の核心 */
+  .soft   { color: var(--c-soft);   }   /* 薄いピンク: サブ強調   */
+  /* 白は color: inherit / var(--c-white) で対応 */
+
+  /* ===== FIXED CTA ===== */
+  .fixed-cta {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 14px 20px 20px;
+    background: linear-gradient(to top, rgba(13,17,23,0.98) 60%, transparent);
+    backdrop-filter: blur(4px);
+  }
+
+  .fixed-cta a {
+    display: block;
+    text-align: center;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--c-strong) 0%, #a8455a 50%, var(--c-strong) 100%);
+    background-size: 200% 200%;
+    animation: shimmer 3s ease infinite;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    font-family: 'Noto Serif JP', serif;
+    box-shadow: 0 4px 24px rgba(212,104,122,0.4);
+  }
+
+  .fixed-cta small {
+    display: block;
+    text-align: center;
+    font-size: 10px;
+    color: var(--c-muted);
+    margin-top: 7px;
+    letter-spacing: 0.1em;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .hero-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+  }
+
+  .hero-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+  }
+
+  /* hook line — renders first, before the title */
+  .hero-hook {
+    position: relative;
+    z-index: 3;
+    padding: 52px 28px 0;
+    opacity: 0;
+    animation: fade-drop 0.7s ease 0.1s forwards;
+  }
+
+  .hero-hook-line {
+    display: inline-block;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.28em;
+    color: var(--blush-light);
+    border-bottom: 1px solid rgba(200,164,164,0.35);
+    padding-bottom: 6px;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 28px 90px;
+    width: 100%;
+  }
+
+  .hero-title {
+    font-size: clamp(28px, 8vw, 44px);
+    font-weight: 300;
+    line-height: 1.55;
+    letter-spacing: 0.03em;
+    color: var(--c-white);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .hero-title .accent {
+    color: var(--c-soft);   /* 薄いピンク */
+    font-weight: 400;
+  }
+
+  /* 旧互換 */
+  .accent  { color: var(--c-soft); }
+  .mid     { color: var(--c-soft); }
+  .base    { color: var(--c-body); }
+  .highlight { color: var(--c-strong); font-weight: 400; }
+
+  .hero-title .big {
+    font-size: clamp(34px, 10vw, 52px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-line-1 {
+    opacity: 0;
+    animation: fade-up 0.9s ease 0.3s forwards;
+    font-size: clamp(22px, 6vw, 32px);
+    color: var(--c-body);
+    font-weight: 300;
+    line-height: 1.65;
+    letter-spacing: 0.04em;
+  }
+
+  .hero-line-2 {
+    opacity: 0;
+    animation: fade-up 0.9s ease 0.3s forwards;
+    font-size: clamp(30px, 8.5vw, 46px);
+    line-height: 1.6;
+    color: var(--c-white);
+  }
+
+  .hero-line-3 {
+    opacity: 0;
+    animation: fade-up 0.9s ease 1.5s forwards;
+    line-height: 1.55;
+  }
+
+  .hero-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    opacity: 0;
+    animation: fade-up 0.9s ease 1.0s forwards;
+  }
+
+  .hero-strip-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--c-body);
+    line-height: 1.5;
+  }
+
+  .hero-strip-line::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: var(--c-soft);
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  /* scroll hint 削除 */
+  .hero-scroll-hint { display: none; }
+  .scroll-bar       { display: none; }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fade-drop {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== SECTIONS ===== */
+  section { padding: 72px 28px; }
+
+  .section-divider {
+    width: 40px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-soft), transparent);
+    margin: 0 auto 52px;
+  }
+
+  /* ===== EMPATHY ===== */
+  .empathy { background: var(--navy-mid); padding: 72px 0 0; }
+  .empathy-text { padding: 0 28px 52px; }
+
+  .empathy-label {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 10px; letter-spacing: 0.5em;
+    color: var(--c-soft); margin-bottom: 28px; text-transform: uppercase;
+  }
+
+  .empathy-title {
+    font-size: 22px; font-weight: 300; line-height: 1.8;
+    letter-spacing: 0.04em; color: var(--c-white); margin-bottom: 36px;
+  }
+
+  .empathy-title em {
+    font-style: normal; color: var(--c-strong);
+    border-bottom: 1px solid rgba(212,104,122,0.35);
+  }
+
+  .feeling-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+
+  .feeling-list li {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 14px; font-weight: 300; letter-spacing: 0.06em;
+    color: var(--c-body); line-height: 1.6;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+
+  .feeling-list li::before {
+    content: '—'; color: var(--c-soft); flex-shrink: 0; margin-top: 1px;
+  }
+
+  .empathy-img-wrap { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; }
+  .empathy-img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
+
+  .empathy-img-quote p {
+    font-size: 15px; font-weight: 300; line-height: 1.9;
+    color: var(--c-white); letter-spacing: 0.06em;
+  }
+
+  .empathy-img-quote p span {
+    color: var(--c-soft); background: rgba(240,184,196,0.12); padding: 1px 6px;
+  }
+
+  /* ===== HONEST SECTION ===== */
+  .honest { background: var(--navy); text-align: center; }
+
+  .honest-eyebrow {
+    font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10px;
+    letter-spacing: 0.5em; color: var(--c-soft); margin-bottom: 32px;
+  }
+
+  .honest-title {
+    font-size: 21px; font-weight: 300; line-height: 1.9;
+    letter-spacing: 0.04em; color: var(--c-white); margin-bottom: 36px;
+  }
+
+  .honest-body {
+    font-size: 14px; font-weight: 300; line-height: 2.1;
+    color: var(--c-body); letter-spacing: 0.06em; text-align: left;
+  }
+
+  .honest-body p + p { margin-top: 20px; }
+
+  .highlight { color: var(--c-strong); font-weight: 400; }
+  .honest-body .highlight { color: var(--c-strong); }
+
+  /* ===== COMFORT ===== */
+  .comfort { padding: 0; position: relative; }
+
+  .comfort-img-wrap { width: 100%; aspect-ratio: 16/9; overflow: hidden; position: relative; }
+  .comfort-img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
+
+  .comfort-text { background: var(--navy-mid); padding: 48px 28px 72px; }
+
+  .comfort-title {
+    font-size: 22px; font-weight: 300; line-height: 1.85;
+    letter-spacing: 0.04em; color: var(--c-white); margin-bottom: 24px;
+  }
+
+  .comfort-title .em { color: var(--c-soft); }   /* 薄いピンク */
+
+  .comfort-body {
+    font-size: 14px; font-weight: 300; line-height: 2.1;
+    color: var(--c-body); letter-spacing: 0.06em;
+  }
+
+  .comfort-body p + p { margin-top: 18px; }
+
+  /* ===== GLASS CARD ===== */
+  .glass-card {
+    background: var(--glass-bg); border: 1px solid var(--glass-border);
+    border-radius: 16px; backdrop-filter: blur(12px); padding: 28px 24px; margin-top: 36px;
+  }
+
+  .glass-card-title {
+    font-size: 13px; font-weight: 300; letter-spacing: 0.2em;
+    color: var(--c-soft); margin-bottom: 20px;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+  }
+
+  .glass-card-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+
+  .glass-card-list li {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 14px; font-weight: 300; letter-spacing: 0.06em;
+    color: var(--c-white); line-height: 1.5;
+  }
+
+  .glass-card-list li .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--c-strong); flex-shrink: 0; opacity: 0.8;
+  }
+
+  /* ===== PROPOSAL ===== */
+  .proposal { background: var(--navy); text-align: center; }
+
+  .proposal-eyebrow {
+    font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10px;
+    letter-spacing: 0.5em; color: var(--c-soft); margin-bottom: 32px;
+  }
+
+  .proposal-title {
+    font-size: 21px; font-weight: 300; line-height: 1.9;
+    letter-spacing: 0.04em; color: var(--c-white); margin-bottom: 28px;
+  }
+
+  .proposal-body {
+    font-size: 14px; font-weight: 300; line-height: 2.1;
+    color: var(--c-body); letter-spacing: 0.06em; text-align: left; margin-bottom: 40px;
+  }
+
+  .proposal-body p + p { margin-top: 18px; }
+
+  .service-card {
+    background: linear-gradient(135deg, rgba(28,37,53,0.9), rgba(19,25,34,0.95));
+    border: 1px solid rgba(212,104,122,0.2); border-radius: 16px;
+    padding: 32px 24px; text-align: left; position: relative; overflow: hidden;
+  }
+
+  .service-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,104,122,0.5), transparent);
+  }
+
+  .service-name {
+    font-size: 18px; font-weight: 400; letter-spacing: 0.08em;
+    color: var(--c-white); margin-bottom: 6px;
+  }
+
+  .service-sub {
+    font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px;
+    letter-spacing: 0.3em; color: var(--c-soft); margin-bottom: 24px;
+  }
+
+  .benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .benefit-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 300; color: var(--c-body); letter-spacing: 0.04em;
+  }
+
+  .benefit-item::before { content: '✓'; color: var(--c-soft); font-size: 11px; flex-shrink: 0; }
+
+  .price-badge {
+    display: inline-block; margin-top: 24px;
+    background: rgba(212,104,122,0.1); border: 1px solid rgba(212,104,122,0.3);
+    border-radius: 50px; padding: 8px 20px; font-size: 13px; font-weight: 300;
+    color: var(--c-soft); letter-spacing: 0.1em;
+  }
+
+  /* ===== CTA SECTION ===== */
+  .cta-section { background: var(--navy-mid); text-align: center; padding: 72px 28px 120px; }
+
+  .cta-title {
+    font-size: 20px; font-weight: 300; line-height: 1.9;
+    letter-spacing: 0.04em; color: var(--c-white); margin-bottom: 12px;
+  }
+
+  .cta-sub {
+    font-size: 13px; font-weight: 300; color: var(--c-body);
+    letter-spacing: 0.08em; line-height: 1.9; margin-bottom: 40px;
+  }
+
+  .cta-btn {
+    display: block; text-align: center; padding: 18px 20px;
+    background: linear-gradient(135deg, var(--c-strong) 0%, #a8455a 50%, var(--c-strong) 100%);
+    background-size: 200% 200%; animation: shimmer 3s ease infinite;
+    border-radius: 50px; color: #fff; font-size: 16px; font-weight: 400;
+    letter-spacing: 0.15em; text-decoration: none; font-family: 'Noto Serif JP', serif;
+    box-shadow: 0 6px 32px rgba(212,104,122,0.45); margin-bottom: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cta-btn:active { transform: scale(0.98); box-shadow: 0 3px 16px rgba(212,104,122,0.3); }
+
+  .cta-note {
+    font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px;
+    letter-spacing: 0.1em; color: var(--c-muted); line-height: 1.9;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--navy); padding: 32px 28px 40px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+
+  footer p {
+    font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10px;
+    color: var(--c-muted); letter-spacing: 0.08em; line-height: 2; text-align: center;
+  }
+
+  /* ===== SCROLL ANIMATION ===== */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fade-in-delay-1 { transition-delay: 0.1s; }
+  .fade-in-delay-2 { transition-delay: 0.2s; }
+  .fade-in-delay-3 { transition-delay: 0.35s; }
+  .fade-in-delay-4 { transition-delay: 0.5s; }
+
+  /* ===== BREATHING TEXT ===== */
+  .breath {
+    animation: breath 5s ease-in-out infinite;
+  }
+
+  @keyframes breath {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- FIXED CTA -->
+<div class="fixed-cta">
+  <a href="https://px.a8.net/svt/ejp?a8mat=4B3KUS+4P35CQ+2PEO+BYLJM" rel="nofollow">匿名で、今すぐ相談してみる</a>
+  <small>登録無料 ・ 顔出し不要 ・ 深夜も繋がれる</small>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-img-wrap">
+    <img src="hero.png" alt="夜の部屋でスマホを見る女性">
+  </div>
+</section>
+
+<!-- EMPATHY: 共感 -->
+<section class="empathy">
+  <div class="empathy-text fade-in">
+    <h2 class="empathy-title">
+      こんな気持ち、<em>抱えていませんか？</em>
+    </h2>
+    <ul class="feeling-list">
+      <li>おやすみが来なかっただけで不安になる</li>
+      <li>ストーリーは更新してるのに返信がない</li>
+      <li>スマホを何度も確認してしまう</li>
+      <li>嫌われたのかな、って思い始めてる</li>
+      <li>重いって思われたくない</li>
+      <li>でも、どうしても気になってしまう</li>
+      <li>友達には何度も相談しにくい</li>
+    </ul>
+  </div>
+
+  <!-- 共感画像 -->
+  <div class="empathy-img-wrap fade-in">
+    <img src="empathy.png" alt="夜にスマホを見つめる女性" loading="lazy">
+  </div>
+</section>
+
+<!-- HONEST: 自己否定を解く -->
+<section class="honest">
+  <p class="honest-eyebrow fade-in">あなたは、おかしくない</p>
+  <h2 class="honest-title fade-in">
+    それだけ、<br>
+    <span style="color: var(--c-strong);">本気で好き</span><br>
+    ってことだから。
+  </h2>
+  <div class="honest-body fade-in">
+    <p>
+      返信ひとつで一喜一憂するのは、
+      あなたが弱いんじゃない。<br>
+      <span class="highlight">それだけ、誰かを大切に想える人だから。</span>
+    </p>
+    <p>
+      夜中に何度もスマホを開くのも、
+      眠れなくなるのも、
+      あなたが真剣だから起きること。
+    </p>
+    <p>
+      でも、ひとりで抱えてると
+      どんどん苦しくなるよね。
+    </p>
+  </div>
+</section>
+
+<!-- COMFORT: 安心画像 -->
+<section class="comfort">
+  <div class="comfort-img-wrap">
+    <img src="comfort.png" alt="暖かい部屋でくつろぐ女性" loading="lazy">
+  </div>
+  <div class="comfort-text fade-in">
+    <h2 class="comfort-title">
+      話すだけで、<br>
+      心が<span class="em">少し軽くなる</span><br>
+      ことがある。
+    </h2>
+    <div class="comfort-body">
+      <p>
+        ひとりで抱え込まなくていい。
+        誰にも言えない気持ちを、
+        そっと受け止めてくれる人がいます。
+      </p>
+      <p>
+        今のあなたのままで、
+        安心してご相談ください。
+      </p>
+    </div>
+
+    <div class="glass-card fade-in fade-in-delay-2">
+      <p class="glass-card-title">こんな相談、よくあります</p>
+      <ul class="glass-card-list">
+        <li><span class="dot"></span>彼がどんな気持ちでいるか知りたい</li>
+        <li><span class="dot"></span>このまま待っていていいのか</li>
+        <li><span class="dot"></span>私のことが好きなのか確かめたい</li>
+        <li><span class="dot"></span>復縁できる可能性があるか聞きたい</li>
+        <li><span class="dot"></span>ただ、話を聞いてもらいたい</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROPOSAL: 提案 -->
+<section class="proposal">
+  <p class="proposal-eyebrow fade-in">ひとつ、提案があります</p>
+  <h2 class="proposal-title fade-in">
+    匿名で話せる、<br>
+    <span style="color: var(--c-soft);">プロの相談相手</span>へ。
+  </h2>
+  <div class="proposal-body fade-in">
+    <p>
+      友達に何度も話すのは気を遣う。
+      SNSには書けない。
+      かといってひとりで考え続けると、
+      気づいたら朝になってた。
+    </p>
+    <p>
+      そんなとき、<strong style="font-weight:400; color: var(--c-white);">cocona（ココナラ）電話占い</strong>なら
+      匿名で、深夜でも、
+      恋愛のプロに話を聞いてもらえます。
+    </p>
+    <p style="font-size:13px; color: var(--c-muted); line-height: 2;">
+      ※ 占いというより「話を聞いてもらう」感覚で大丈夫。
+      初めての方も多く来られています。
+    </p>
+  </div>
+
+  <div class="service-card fade-in">
+    <p class="service-name">ココナラ電話占い</p>
+    <p class="service-sub">COCONALA TELEPHONE FORTUNE</p>
+    <div class="benefits">
+      <div class="benefit-item">匿名でOK</div>
+      <div class="benefit-item">顔出し不要</div>
+      <div class="benefit-item">深夜も繋がれる</div>
+      <div class="benefit-item">恋愛相談が得意</div>
+      <div class="benefit-item">登録無料</div>
+      <div class="benefit-item">今すぐ始められる</div>
+    </div>
+    <div style="text-align:center;">
+      <span class="price-badge">1分 100円〜</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+  <h2 class="cta-title fade-in breath">
+    今夜、<br>
+    ひとりで抱えなくていい。
+  </h2>
+  <p class="cta-sub fade-in fade-in-delay-1">
+    話すだけでも、きっと楽になる。<br>
+    あなたのペースで、大丈夫。
+  </p>
+  <a href="https://px.a8.net/svt/ejp?a8mat=4B3KUS+4P35CQ+2PEO+BYLJM" rel="nofollow" class="cta-btn fade-in fade-in-delay-2">
+    匿名で、今すぐ相談してみる
+  </a>
+  <p class="cta-note fade-in fade-in-delay-3">
+    登録無料 ／ 顔出し不要 ／ いつでも退会OK<br>
+    ※ 本ページはアフィリエイト広告を含みます
+  </p>
+</section>
+
+<footer>
+  <p>
+    本サービスはエンターテインメント目的です。<br>
+    © ココナラ電話占い
+  </p>
+</footer>
+
+<script>
+  // Scroll fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
